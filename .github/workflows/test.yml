@@ -24,10 +24,6 @@ jobs:
 
     steps:
 
-      - name: Show current directory
-        run: |
-          cat /Users/runner/.bash_profile
-
 #      - name: Checkout Package 
 #        uses: actions/checkout@v3
 #
@@ -93,15 +89,17 @@ jobs:
      #     echo export DISPLAY=:1.0 >> /etc/profile
      #     launchctl load /Library/LaunchDaemons/local.xvfb.plist
 
-#      - name: Install GFortran
-#        run: |
-#          cd /tmp
-#          curl -LO $GFORTRAN
-#          gfortran_tar_xz=`echo gfortran*`
-#          sudo tar -xf $gfortran_tar_xz -C /
-#          sudo echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
-#          sudo ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
-#
+      - name: Install GFortran
+        run: |
+          cd /tmp
+          curl -LO $GFORTRAN
+          gfortran_tar_xz=`echo gfortran*`
+          sudo tar -xf $gfortran_tar_xz -C /
+          # Use .bash_profile since we can't edit /etc/profile
+          echo export PATH=$PATH:/opt/gfortran/bin >> /Users/runner/.bash_profile
+          . /Users/runner/.bash_profile
+          sudo ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
+
 #      - name: Brew $BREWS
 #        run: |
 #          chown -R biocbuild:admin /usr/local/*
