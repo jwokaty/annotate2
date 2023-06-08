@@ -38,7 +38,7 @@ jobs:
           cd /tmp
           curl -LO $XQUARTZ
           xquartz_pkg=`echo XQuartz*`
-          sudo installer -pkg /tmp/$xquartz_pkg -target /
+          sudo installer -pkg $xquartz_pkg -target /
           cd /usr/local/include/ && ln -s /opt/X11/include/X11 X11
 
      # # Is this needed?
@@ -94,7 +94,7 @@ jobs:
           cd /tmp
           curl -LO $GFORTRAN
           echo gfortran_tar_xz=`echo gfortran*`
-          tar -xf /tmp/$gfortran_tar_xz -C /
+          tar -xf $gfortran_tar_xz -C /
           echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
           ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
 
@@ -108,7 +108,7 @@ jobs:
           cd /tmp
           curl -LO $OPENSSL
           echo openssl_tar_xz=`echo openssl*`
-          tar -xf /tmp/$openssl_tar_xz
+          tar -xf $openssl_tar_xz
           cat << EOF > /etc/profile
           export PATH=$PATH:/opt/R/x86_64/bin
           export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/R/arm64/lib/pkgconfig
@@ -125,7 +125,7 @@ jobs:
           cd /tmp
           curl -LO $MACTEX
           echo mactex_pkg=`echo MacTeX*`
-          installer -pkg /tmp/$mactex_pkg -target /
+          installer -pkg $mactex_pkg -target /
     
       - name: Install Pandoc
         run: |
