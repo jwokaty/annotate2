@@ -130,14 +130,14 @@ jobs:
           cd /tmp
           curl -LO $MACTEX
           mactex_pkg=`echo BasicTeX*`
-          installer -pkg $mactex_pkg -target /
+          sudo installer -pkg $mactex_pkg -target /
     
       - name: Install Pandoc
         run: |
           cd /tmp
           curl -LO $PANDOC
           pandoc_pkg=`echo pandoc*`
-          installer -pkg $pandoc_pkg -target /
+          sudo installer -pkg $pandoc_pkg -target /
 
       - name: R CMD INSTALL
         run: R CMD INSTALL ${GITHUB_REPOSITORY##*/}
