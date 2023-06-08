@@ -93,9 +93,9 @@ jobs:
         run: |
           cd /tmp
           curl -LO $GFORTRAN
-          echo gfortran_tar_xz=`echo gfortran*`
-          tar -xf $gfortran_tar_xz
-          mv ${gfortran_tar_xz%%.} /
+          gfortran_tar_xz=`echo gfortran*`
+          tar -xf $gfortran_tar_xz -C /
+          #mv ${gfortran_tar_xz%%.} /
           echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
           ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
 
@@ -108,7 +108,7 @@ jobs:
         run: |
           cd /tmp
           curl -LO $OPENSSL
-          echo openssl_tar_xz=`echo openssl*`
+          openssl_tar_xz=`echo openssl*`
           tar -xf $openssl_tar_xz
           cat << EOF > /etc/profile
           export PATH=$PATH:/opt/R/x86_64/bin
@@ -125,14 +125,14 @@ jobs:
         run: |
           cd /tmp
           curl -LO $MACTEX
-          echo mactex_pkg=`echo MacTeX*`
+          mactex_pkg=`echo MacTeX*`
           installer -pkg $mactex_pkg -target /
     
       - name: Install Pandoc
         run: |
           cd /tmp
           curl -LO $PANDOC
-          echo pandoc_pkg=`echo pandoc*`
+          pandoc_pkg=`echo pandoc*`
           installer -pkg $pandoc_pkg -target /
 
       - name: R CMD INSTALL
