@@ -26,7 +26,7 @@ jobs:
 
       - name: Show current directory
         run: |
-          ls -la /Users/runner
+          cat /Users/runner/.bash_profile
 
 #      - name: Checkout Package 
 #        uses: actions/checkout@v3
