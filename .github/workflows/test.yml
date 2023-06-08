@@ -24,22 +24,22 @@ jobs:
 
     steps:
 
-#      - name: Checkout Package 
-#        uses: actions/checkout@v3
-#
-#      - name: Checkout BBS
-#        uses: actions/checkout@v3
-#        with:
-#          repository: Bioconductor/BBS
-#          path: BBS
-#
-#      - name: Install XQuartz
-#        run: |
-#          cd /tmp
-#          curl -LO $XQUARTZ
-#          xquartz_pkg=`echo XQuartz*`
-#          sudo installer -pkg $xquartz_pkg -target /
-#          cd /usr/local/include/ && ln -s /opt/X11/include/X11 X11
+      - name: Checkout Package 
+        uses: actions/checkout@v3
+
+      - name: Checkout BBS
+        uses: actions/checkout@v3
+        with:
+          repository: Bioconductor/BBS
+          path: BBS
+
+      - name: Install XQuartz
+        run: |
+          cd /tmp
+          curl -LO $XQUARTZ
+          xquartz_pkg=`echo XQuartz*`
+          sudo installer -pkg $xquartz_pkg -target /
+          cd /usr/local/include/ && ln -s /opt/X11/include/X11 X11
 
      # # Is this needed?
      # - name: Create XVFB plist
@@ -102,9 +102,7 @@ jobs:
           which gfortran
 
       - name: Brew $BREWS
-        run: |
-          chown -R biocbuild:admin /usr/local/*
-          brew install $BREWS
+        run: brew install $BREWS
 
       - name: Install Openssl
         run: |
