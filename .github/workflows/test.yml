@@ -41,53 +41,53 @@ jobs:
           sudo installer -pkg /tmp/$xquartz_pkg -target /
           cd /usr/local/include/ && ln -s /opt/X11/include/X11 X11
 
-      # Is this needed?
-      - name: Create XVFB plist
-        run: |
-          cat << EOF > /Library/LaunchDaemons/local.xvfb.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-            <dict>
-              <key>KeepAlive</key>
-                <true/>
-              <key>Label</key>
-                <string>local.xvfb</string>
-              <key>ProgramArguments</key>
-                <array>
-                  <string>/opt/X11/bin/Xvfb</string>
-                  <string>:1</string>
-                  <string>-screen</string>
-                  <string>0</string>
-                  <string>800x600x16</string>
-                </array>
-              <key>RunAtLoad</key>
-                <true/>
-              <key>ServiceDescription</key>
-                <string>Xvfb Virtual X Server</string>
-              <key>StandardOutPath</key>
-                <string>/var/log/xvfb/xvfb.stdout.log</string>
-              <key>StandardErrorPath</key>
-                <string>/var/log/xvfb/xvfb.stderror.log</string>
-            </dict>
-          </plist>
-          EOF
+     # # Is this needed?
+     # - name: Create XVFB plist
+     #   run: |
+     #     cat << EOF > /Library/LaunchDaemons/local.xvfb.plist
+     #     <?xml version="1.0" encoding="UTF-8"?>
+     #     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     #     <plist version="1.0">
+     #       <dict>
+     #         <key>KeepAlive</key>
+     #           <true/>
+     #         <key>Label</key>
+     #           <string>local.xvfb</string>
+     #         <key>ProgramArguments</key>
+     #           <array>
+     #             <string>/opt/X11/bin/Xvfb</string>
+     #             <string>:1</string>
+     #             <string>-screen</string>
+     #             <string>0</string>
+     #             <string>800x600x16</string>
+     #           </array>
+     #         <key>RunAtLoad</key>
+     #           <true/>
+     #         <key>ServiceDescription</key>
+     #           <string>Xvfb Virtual X Server</string>
+     #         <key>StandardOutPath</key>
+     #           <string>/var/log/xvfb/xvfb.stdout.log</string>
+     #         <key>StandardErrorPath</key>
+     #           <string>/var/log/xvfb/xvfb.stderror.log</string>
+     #       </dict>
+     #     </plist>
+     #     EOF
 
-      # Is this needed?
-      - name: Create xvfb.conf
-        run: |
-          cat << EOF > /etc/newsyslog.d/xvfb.conf
-          # logfilename          [owner:group]    mode count size when  flags [/pid_file] [sig_num]
-          /var/log/xvfb/xvfb.stderror.log         644  5     5120 *     JN
-          /var/log/xvfb/xvfb.stdout.log           644  5     5120 *     JN
-          EOF
+     # # Is this needed?
+     # - name: Create xvfb.conf
+     #   run: |
+     #     cat << EOF > /etc/newsyslog.d/xvfb.conf
+     #     # logfilename          [owner:group]    mode count size when  flags [/pid_file] [sig_num]
+     #     /var/log/xvfb/xvfb.stderror.log         644  5     5120 *     JN
+     #     /var/log/xvfb/xvfb.stdout.log           644  5     5120 *     JN
+     #     EOF
 
-      # Is this needed?
-      - name: Simulate Rotation, Export DISPLAY, and Load XVFB
-        run: |
-          newsyslog -nvv
-          echo export DISPLAY=:1.0 >> /etc/profile
-          launchctl load /Library/LaunchDaemons/local.xvfb.plist
+     # # Is this needed?
+     # - name: Simulate Rotation, Export DISPLAY, and Load XVFB
+     #   run: |
+     #     newsyslog -nvv
+     #     echo export DISPLAY=:1.0 >> /etc/profile
+     #     launchctl load /Library/LaunchDaemons/local.xvfb.plist
 
       - name: Install GFortran
         run: |
