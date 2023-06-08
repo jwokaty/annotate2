@@ -99,6 +99,7 @@ jobs:
           echo export PATH=$PATH:/opt/gfortran/bin >> /Users/runner/.bash_profile
           . /Users/runner/.bash_profile
           sudo ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
+          which gfortran
 
 #      - name: Brew $BREWS
 #        run: |
