@@ -94,8 +94,7 @@ jobs:
           cd /tmp
           curl -LO $GFORTRAN
           gfortran_tar_xz=`echo gfortran*`
-          tar -xf $gfortran_tar_xz -C /
-          #mv ${gfortran_tar_xz%%.} /
+          sudo tar -xf $gfortran_tar_xz -C /
           echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
           ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
 
