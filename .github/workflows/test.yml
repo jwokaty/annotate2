@@ -27,6 +27,7 @@ jobs:
       - name: Show current directory
         run: |
           ls -la
+          pwd
 
 #      - name: Checkout Package 
 #        uses: actions/checkout@v3
