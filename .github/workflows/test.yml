@@ -129,7 +129,7 @@ jobs:
         run: |
           cd /tmp
           curl -LO $MACTEX
-          mactex_pkg=`echo MacTeX*`
+          mactex_pkg=`echo BasicTeX*`
           installer -pkg $mactex_pkg -target /
     
       - name: Install Pandoc
