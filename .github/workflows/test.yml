@@ -1,12 +1,13 @@
 on:
   workflow_dispatch:
 
-name: MacOSX11 Test 
+name: MacOSX12 Test 
 
 env:
   BREWS: "xz pstree poppler"
   GFORTRAN: https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0/gfortran-12.2-darwin20-r0-universal.tar.xz 
-  MACTEX: https://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
+  # Use BasicTeX over MacTeX since it is smaller
+  MACTEX: https://mirror.ctan.org/systems/mac/mactex/BasicTeX.pkg
   OPENSSL: https://mac.r-project.org/bin/darwin20/arm64/openssl-1.1.1t-darwin.20-arm64.tar.xz
   PANDOC: https://github.com/jgm/pandoc/releases/download/2.7.3/pandoc-2.7.3-macOS.pkg
   XQUARTZ: https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
@@ -16,7 +17,7 @@ jobs:
 
   mac-test:
 
-    runs-on: macos-11
+    runs-on: macos-12
 
     strategy:
 
@@ -101,7 +102,7 @@ jobs:
           sudo ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
           which gfortran
 
-      - name: Brew $BREWS
+      - name: Brew ${{ env.BREWS }}
         run: brew install $BREWS
 
       - name: Install Openssl
