@@ -1,0 +1,144 @@
+on:
+  workflow_dispatch:
+
+name: MacOSX11 Test 
+
+env:
+  BREWS: "xz pstree poppler"
+  GFORTRAN: https://github.com/R-macos/gcc-12-branch/releases/download/12.2-darwin-r0/gfortran-12.2-darwin20-r0-universal.tar.xz 
+  MACTEX: https://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
+  OPENSSL: https://mac.r-project.org/bin/darwin20/arm64/openssl-1.1.1t-darwin.20-arm64.tar.xz
+  PANDOC: https://github.com/jgm/pandoc/releases/download/2.7.3/pandoc-2.7.3-macOS.pkg
+  XQUARTZ: https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
+  UBUNTU_VERSION: "22.04"
+
+jobs:
+
+  mac-test:
+
+    runs-on: macos-11
+
+    strategy:
+
+      fail-fast: false
+
+    steps:
+
+      - name: Checkout Package 
+        uses: action/checkout@v3
+
+      - name: Checkout BBS
+        uses: action/checkout@v3
+        with:
+          repository: Bioconductor/BBS
+          path: BBS
+
+      - name: Install XQuartz
+        run: |
+          cd /tmp
+          curl -LO $XQUARTZ
+          xquartz_pkg=`echo XQuartz*`
+          sudo installer -pkg /tmp/$xquartz_pkg -target /
+          cd /usr/local/include/ && ln -s /opt/X11/include/X11 X11
+
+      # Is this needed?
+      - name: Create XVFB plist
+        run: |
+          cat << EOF > /Library/LaunchDaemons/local.xvfb.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+            <dict>
+              <key>KeepAlive</key>
+                <true/>
+              <key>Label</key>
+                <string>local.xvfb</string>
+              <key>ProgramArguments</key>
+                <array>
+                  <string>/opt/X11/bin/Xvfb</string>
+                  <string>:1</string>
+                  <string>-screen</string>
+                  <string>0</string>
+                  <string>800x600x16</string>
+                </array>
+              <key>RunAtLoad</key>
+                <true/>
+              <key>ServiceDescription</key>
+                <string>Xvfb Virtual X Server</string>
+              <key>StandardOutPath</key>
+                <string>/var/log/xvfb/xvfb.stdout.log</string>
+              <key>StandardErrorPath</key>
+                <string>/var/log/xvfb/xvfb.stderror.log</string>
+            </dict>
+          </plist>
+          EOF
+
+      # Is this needed?
+      - name: Create xvfb.conf
+        run: |
+          cat << EOF > /etc/newsyslog.d/xvfb.conf
+          # logfilename          [owner:group]    mode count size when  flags [/pid_file] [sig_num]
+          /var/log/xvfb/xvfb.stderror.log         644  5     5120 *     JN
+          /var/log/xvfb/xvfb.stdout.log           644  5     5120 *     JN
+          EOF
+
+      # Is this needed?
+      - name: Simulate Rotation, Export DISPLAY, and Load XVFB
+        run: |
+          newsyslog -nvv
+          echo export DISPLAY=:1.0 >> /etc/profile
+          launchctl load /Library/LaunchDaemons/local.xvfb.plist
+
+      - name: Install GFortran
+        run: |
+          cd /tmp
+          curl -LO $GFORTRAN
+          echo gfortran_tar_xz=`echo gfortran*`
+          tar -xf /tmp/$gfortran_tar_xz -C /
+          echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
+          ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
+
+      - name: Brew $BREWS
+        run: |
+          chown -R biocbuild:admin /usr/local/*
+          brew install $BREWS
+
+      - name: Install Openssl
+        run: |
+          cd /tmp
+          curl -LO $OPENSSL
+          echo openssl_tar_xz=`echo openssl*`
+          tar -xf /tmp/$openssl_tar_xz
+          cat << EOF > /etc/profile
+          export PATH=$PATH:/opt/R/x86_64/bin
+          export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/R/arm64/lib/pkgconfig
+          export OPENSSL_LIBS="/opt/R/arm64/lib/libssl.a /opt/R/arm64/lib/libcrypto.a"
+          EOF
+
+      - name: Install pip packages
+        run: |
+          python3 -m pip install $(cat $GITHUB_WORKSPACE/BBS/Ubuntu-files/$UBUNTU_VERSION/pip* | awk '/^[^#]/ {print $1}')
+
+      # Is this needed?
+      - name: Install MacTeX
+        run: |
+          cd /tmp
+          curl -LO $MACTEX
+          echo mactex_pkg=`echo MacTeX*`
+          installer -pkg /tmp/$mactex_pkg -target /
+    
+      - name: Install Pandoc
+        run: |
+          cd /tmp
+          curl -LO $PANDOC
+          echo pandoc_pkg=`echo pandoc*`
+          installer -pkg $pandoc_pkg -target /
+
+      - name: R CMD INSTALL
+        run: R CMD INSTALL ${GITHUB_REPOSITORY##*/}
+
+      - name: R CMD build
+        run: R CMD build --keep-empty-dirs --no-resave-data ${GITHUB_REPOSITORY##*/}
+
+      - name: R CMD check
+        run: R CMD check --install=check:$PACKAGE.install-out.txt --library=/Library/Frameworks/R.framework/Resources/library --no-vignettes --timings ${GITHUB_REPOSITORY##*/}
