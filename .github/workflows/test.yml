@@ -95,8 +95,8 @@ jobs:
           curl -LO $GFORTRAN
           gfortran_tar_xz=`echo gfortran*`
           sudo tar -xf $gfortran_tar_xz -C /
-          echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
-          ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
+          sudo echo export PATH=$PATH:/opt/gfortran/bin >> /etc/profile
+          sudo ln -sfn $(xcrun --show-sdk-path) /opt/gfortran/SDK 
 
       - name: Brew $BREWS
         run: |
@@ -108,8 +108,8 @@ jobs:
           cd /tmp
           curl -LO $OPENSSL
           openssl_tar_xz=`echo openssl*`
-          tar -xf $openssl_tar_xz
-          cat << EOF > /etc/profile
+          sudo tar -xf $openssl_tar_xz
+          sudo cat << EOF > /etc/profile
           export PATH=$PATH:/opt/R/x86_64/bin
           export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/R/arm64/lib/pkgconfig
           export OPENSSL_LIBS="/opt/R/arm64/lib/libssl.a /opt/R/arm64/lib/libcrypto.a"
